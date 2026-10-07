@@ -1,5 +1,6 @@
 using AcxiomCRM.Data;
 using AcxiomCRM.Models;
+using AcxiomCRM.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,18 @@ namespace AcxiomCRM.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
+        private readonly AuditService _auditService;
 
         public UserManagementController(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            AuditService auditService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _auditService = auditService;
         }
 
         public async Task<IActionResult> Index()
@@ -47,18 +51,39 @@ namespace AcxiomCRM.Controllers
             if (user == null)
                 return NotFound();
 
-            var validRoles = new[] { "Admin", "Manager", "Sales Executive" };
+            var validRoles = new[]
+            {
+                "Admin",
+                "Manager",
+                "Sales Executive"
+            };
 
             if (!validRoles.Contains(role))
                 return BadRequest();
 
             var currentRoles = await _userManager.GetRolesAsync(user);
+            var oldRole = currentRoles.FirstOrDefault() ?? "";
 
             if (currentRoles.Any())
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            {
+                var removeResult =
+                    await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
-            await _userManager.AddToRoleAsync(user, role);
+                if (!removeResult.Succeeded)
+                    return BadRequest();
+            }
 
+            var addResult = await _userManager.AddToRoleAsync(user, role);
+
+            if (!addResult.Succeeded)
+                return BadRequest();
+
+            await _auditService.LogAsync(
+                "Role Changed",
+                "User",
+                user.Id,
+                oldRole,
+                role);
             return RedirectToAction(nameof(Index));
         }
     }

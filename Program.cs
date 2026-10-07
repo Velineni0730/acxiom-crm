@@ -25,8 +25,14 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
 })
+
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<
+    SignInManager<ApplicationUser>,
+    ApplicationSignInManager>();
+
 
 builder.Services.AddRazorPages();
 
