@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold mb-1">Reports</h2>
+    <p class="text-muted mb-0">
+        CRM performance and sales summary
+    </p>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Total Customers</div>
+                <h2 class="fw-bold">@ViewBag.TotalCustomers</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Total Leads</div>
+                <h2 class="fw-bold">@ViewBag.TotalLeads</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Converted Leads</div>
+                <h2 class="fw-bold">@ViewBag.ConvertedLeads</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Pending Follow-Ups</div>
+                <h2 class="fw-bold">@ViewBag.PendingFollowUps</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted">Total Opportunities</div>
+                <h2 class="fw-bold">@ViewBag.TotalOpportunities</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted">Won Opportunities</div>
+                <h2 class="fw-bold">@ViewBag.WonOpportunities</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted">Active Pipeline</div>
+                <h2 class="fw-bold">₹@ViewBag.TotalPipeline</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="text-muted">Weighted Pipeline</div>
+                <h2 class="fw-bold">₹@ViewBag.WeightedPipeline</h2>
+                <p class="text-muted mb-0">
+                    Amount × Probability
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="fw-bold">Lead Conversion</h5>
+
+                @{
+                    var totalLeads = (int)ViewBag.TotalLeads;
+                    var convertedLeads = (int)ViewBag.ConvertedLeads;
+
+                    var conversionRate = totalLeads > 0
+                        ? (decimal)convertedLeads / totalLeads * 100
+                        : 0;
+                }
+
+                <h2 class="fw-bold">
+                    @conversionRate.ToString("0.00")%
+                </h2>
+
+                <p class="text-muted mb-0">
+                    @convertedLeads converted out of @totalLeads leads
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
