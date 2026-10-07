@@ -15,26 +15,76 @@ namespace AcxiomCRM.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? fromDate, DateTime? toDate)
         {
-            ViewBag.TotalCustomers = await _context.Customers.CountAsync();
+            var from = fromDate?.Date;
+            var to = toDate?.Date.AddDays(1);
 
-            ViewBag.OpenLeads = await _context.Leads
-                .CountAsync(l =>
-                    l.Status != "Converted" &&
-                    l.Status != "Lost");
+            var customers = _context.Customers.AsQueryable();
+            var leads = _context.Leads.AsQueryable();
+            var opportunities = _context.Opportunities.AsQueryable();
+            var followUps = _context.FollowUps.AsQueryable();
 
-            ViewBag.OpenOpportunities = await _context.Opportunities
-                .CountAsync(o =>
-                    o.Status != "Lost" &&
-                    o.Status != "Won");
+            if (from.HasValue)
+            {
+                customers = customers.Where(c => c.CreatedDate >= from.Value);
+                leads = leads.Where(l => l.CreatedDate >= from.Value);
+                opportunities = opportunities.Where(o => o.CreatedDate >= from.Value);
+                followUps = followUps.Where(f => f.FollowUpDate >= from.Value);
+            }
 
-            ViewBag.PendingFollowUps = await _context.FollowUps
-                .CountAsync(f => f.Status == "Planned");
+            if (to.HasValue)
+            {
+                customers = customers.Where(c => c.CreatedDate < to.Value);
+                leads = leads.Where(l => l.CreatedDate < to.Value);
+                opportunities = opportunities.Where(o => o.CreatedDate < to.Value);
+                followUps = followUps.Where(f => f.FollowUpDate < to.Value);
+            }
 
-            ViewBag.Leads = await _context.Leads.CountAsync();
-            ViewBag.Customers = await _context.Customers.CountAsync();
-            ViewBag.Opportunities = await _context.Opportunities.CountAsync();
+            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+
+            ViewBag.TotalCustomers = await customers.CountAsync();
+
+            ViewBag.OpenLeads = await leads.CountAsync(l =>
+                l.Status != "Converted" &&
+                l.Status != "Lost" &&
+                l.Status != "Unqualified");
+
+            ViewBag.OpenOpportunities = await opportunities.CountAsync(o =>
+                o.Status == "Active");
+
+            ViewBag.PendingFollowUps = await followUps.CountAsync(f =>
+                f.Status == "Planned");
+
+            ViewBag.PipelineValue = await opportunities
+                .Where(o => o.Status == "Active")
+                .SumAsync(o => o.Amount);
+
+            var pipeline = await opportunities
+                .Where(o => o.Status == "Active")
+                .GroupBy(o => o.Stage)
+                .Select(g => new
+                {
+                    Stage = g.Key,
+                    Amount = g.Sum(o => o.Amount)
+                })
+                .ToListAsync();
+
+            var leadStatus = await leads
+                .GroupBy(l => l.Status)
+                .Select(g => new
+                {
+                    Status = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            ViewBag.PipelineLabels = pipeline.Select(x => x.Stage).ToList();
+            ViewBag.PipelineValues = pipeline.Select(x => x.Amount).ToList();
+
+            ViewBag.LeadStatusLabels = leadStatus.Select(x => x.Status).ToList();
+            ViewBag.LeadStatusValues = leadStatus.Select(x => x.Count).ToList();
 
             return View();
         }

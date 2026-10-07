@@ -1,72 +1,173 @@
+@using System.Text.Json
+
 @{
     ViewData["Title"] = "Dashboard";
+
+    var pipelineLabels = JsonSerializer.Serialize(ViewBag.PipelineLabels);
+    var pipelineValues = JsonSerializer.Serialize(ViewBag.PipelineValues);
+
+    var leadStatusLabels = JsonSerializer.Serialize(ViewBag.LeadStatusLabels);
+    var leadStatusValues = JsonSerializer.Serialize(ViewBag.LeadStatusValues);
 }
 
-<h2 class="mb-4">CRM Dashboard</h2>
-
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6>Total Customers</h6>
-                <h2>@ViewBag.TotalCustomers</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6>Open Leads</h6>
-                <h2>@ViewBag.OpenLeads</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6>Open Opportunities</h6>
-                <h2>@ViewBag.OpenOpportunities</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6>Pending Follow-Ups</h6>
-                <h2>@ViewBag.PendingFollowUps</h2>
-            </div>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Dashboard</h2>
+        <p class="text-muted mb-0">CRM business overview</p>
     </div>
 </div>
 
-<div class="card shadow-sm">
+<div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
-        <h5>CRM Overview</h5>
-        <canvas id="crmChart"></canvas>
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">From Date</label>
+                <input type="date"
+                       name="fromDate"
+                       value="@ViewBag.FromDate"
+                       class="form-control" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">To Date</label>
+                <input type="date"
+                       name="toDate"
+                       value="@ViewBag.ToDate"
+                       class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    Filter
+                </button>
+            </div>
+
+            <div class="col-md-2">
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary w-100">
+                    Clear
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="row g-4 mb-4">
 
-<script>
-    new Chart(document.getElementById('crmChart'), {
-        type: 'bar',
-        data: {
-            labels: ['Customers', 'Leads', 'Opportunities'],
-            datasets: [{
-                label: 'Records',
-                data: [
-                    @ViewBag.Customers,
-                    @ViewBag.Leads,
-                    @ViewBag.Opportunities
-                ]
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-</script>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Customers</div>
+                <h2 class="fw-bold">@ViewBag.TotalCustomers</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Open Leads</div>
+                <h2 class="fw-bold">@ViewBag.OpenLeads</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Open Opportunities</div>
+                <h2 class="fw-bold">@ViewBag.OpenOpportunities</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted">Pending Follow-Ups</div>
+                <h2 class="fw-bold">@ViewBag.PendingFollowUps</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5 class="fw-bold mb-2">Sales Pipeline</h5>
+                <p class="text-muted small">
+                    Active opportunity value by stage
+                </p>
+
+                <h2 class="fw-bold mb-4">
+                    ₹@ViewBag.PipelineValue
+                </h2>
+
+                <canvas id="pipelineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5 class="fw-bold mb-2">Lead Status</h5>
+                <p class="text-muted small">
+                    Lead distribution by status
+                </p>
+
+                <canvas id="leadChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const pipelineLabels = @Html.Raw(pipelineLabels);
+        const pipelineValues = @Html.Raw(pipelineValues);
+
+        const leadStatusLabels = @Html.Raw(leadStatusLabels);
+        const leadStatusValues = @Html.Raw(leadStatusValues);
+
+        new Chart(document.getElementById('pipelineChart'), {
+            type: 'bar',
+            data: {
+                labels: pipelineLabels,
+                datasets: [{
+                    label: 'Pipeline Amount',
+                    data: pipelineValues
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('leadChart'), {
+            type: 'doughnut',
+            data: {
+                labels: leadStatusLabels,
+                datasets: [{
+                    label: 'Leads',
+                    data: leadStatusValues
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    </script>
+}
