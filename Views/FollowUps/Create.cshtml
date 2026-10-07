@@ -1,0 +1,99 @@
+@model AcxiomCRM.Models.FollowUp
+
+@{
+    ViewData["Title"] = "Schedule Follow-Up";
+}
+
+<div class="container mt-4">
+
+    <h1>Schedule Follow-Up</h1>
+
+    <form asp-action="Create" method="post">
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="CustomerId"
+                   class="form-label"></label>
+
+            <input asp-for="CustomerId"
+                   type="number"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="LeadId"
+                   class="form-label"></label>
+
+            <input asp-for="LeadId"
+                   type="number"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FollowUpDate"
+                   class="form-label"></label>
+
+            <input asp-for="FollowUpDate"
+                   type="date"
+                   class="form-control" />
+
+            <span asp-validation-for="FollowUpDate"
+                  class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FollowUpType"
+                   class="form-label"></label>
+
+            <select asp-for="FollowUpType"
+                    class="form-select">
+
+                <option value="Call">Call</option>
+                <option value="Meeting">Meeting</option>
+                <option value="Email">Email</option>
+                <option value="Task">Task</option>
+
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Remarks"
+                   class="form-label"></label>
+
+            <textarea asp-for="Remarks"
+                      class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="AssignedTo"
+                   class="form-label"></label>
+
+            <input asp-for="AssignedTo"
+                   class="form-control" />
+        </div>
+
+        <input type="hidden"
+               asp-for="Status"
+               value="Planned" />
+
+        <button type="submit"
+                class="btn btn-primary">
+            Schedule
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

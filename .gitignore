@@ -1,0 +1,18 @@
+bin/
+obj/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local database
+*.db
+*.db-shm
+*.db-wal
+
+# Environment / secrets
+.env
+appsettings.Local.json

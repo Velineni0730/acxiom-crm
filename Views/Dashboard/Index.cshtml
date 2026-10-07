@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4">CRM Dashboard</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Total Customers</h6>
+                <h2>@ViewBag.TotalCustomers</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Open Leads</h6>
+                <h2>@ViewBag.OpenLeads</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Open Opportunities</h6>
+                <h2>@ViewBag.OpenOpportunities</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6>Pending Follow-Ups</h6>
+                <h2>@ViewBag.PendingFollowUps</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h5>CRM Overview</h5>
+        <canvas id="crmChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    new Chart(document.getElementById('crmChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Customers', 'Leads', 'Opportunities'],
+            datasets: [{
+                label: 'Records',
+                data: [
+                    @ViewBag.Customers,
+                    @ViewBag.Leads,
+                    @ViewBag.Opportunities
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>

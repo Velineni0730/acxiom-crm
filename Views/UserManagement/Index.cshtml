@@ -1,0 +1,41 @@
+@model List<(AcxiomCRM.Models.ApplicationUser User, IList<string> Roles)>
+
+<h2 class="mb-4">User & Role Management</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>Change Role</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.User.FullName</td>
+            <td>@item.User.Email</td>
+            <td>
+                @(item.Roles.Any() ? string.Join(", ", item.Roles) : "No Role")
+            </td>
+            <td>
+                <form asp-action="ChangeRole" method="post" class="d-flex gap-2">
+                    <input type="hidden" name="id" value="@item.User.Id" />
+
+                    <select name="role" class="form-select">
+                        <option>Admin</option>
+                        <option>Manager</option>
+                        <option>Sales Executive</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">
+                        Update
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

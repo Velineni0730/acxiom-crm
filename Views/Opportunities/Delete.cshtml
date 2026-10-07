@@ -1,0 +1,25 @@
+@model AcxiomCRM.Models.Opportunity
+
+<div class="container mt-4">
+    <h1>Delete Opportunity</h1>
+
+    <div class="alert alert-danger">
+        Are you sure you want to delete this opportunity?
+    </div>
+
+    <p><strong>Name:</strong> @Model.OpportunityName</p>
+    <p><strong>Amount:</strong> @Model.Amount</p>
+    <p><strong>Stage:</strong> @Model.Stage</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="OpportunityId" />
+
+        <button type="submit" class="btn btn-danger">
+            Confirm Delete
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>

@@ -1,0 +1,84 @@
+@model AcxiomCRM.Models.Opportunity
+
+@{
+    ViewData["Title"] = "Edit Opportunity";
+}
+
+<div class="container mt-4">
+    <h1>Edit Opportunity</h1>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="OpportunityId" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="OpportunityName" class="form-label"></label>
+            <input asp-for="OpportunityName" class="form-control" />
+            <span asp-validation-for="OpportunityName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CustomerId" class="form-label"></label>
+            <input asp-for="CustomerId" type="number" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="LeadId" class="form-label"></label>
+            <input asp-for="LeadId" type="number" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Amount" class="form-label"></label>
+            <input asp-for="Amount" type="number" step="0.01" class="form-control" />
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Stage" class="form-label"></label>
+            <select asp-for="Stage" class="form-select">
+                <option>Qualification</option>
+                <option>Proposal</option>
+                <option>Negotiation</option>
+                <option>Won</option>
+                <option>Lost</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Probability" class="form-label"></label>
+            <input asp-for="Probability" type="number" min="0" max="100"
+                   class="form-control" />
+            <span asp-validation-for="Probability" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ExpectedCloseDate" class="form-label"></label>
+            <input asp-for="ExpectedCloseDate" type="date" class="form-control" />
+            <span asp-validation-for="ExpectedCloseDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" class="form-select">
+                <option>Active</option>
+                <option>Won</option>
+                <option>Lost</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="AssignedTo" class="form-label"></label>
+            <input asp-for="AssignedTo" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

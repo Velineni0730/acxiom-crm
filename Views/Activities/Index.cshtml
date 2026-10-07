@@ -1,0 +1,42 @@
+@model IEnumerable<AcxiomCRM.Models.Activity>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Activity Management</h2>
+    <a asp-action="Create" class="btn btn-primary">Add Activity</a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var activity in Model)
+    {
+        <tr>
+            <td>@activity.ActivityType</td>
+            <td>@activity.Subject</td>
+            <td>@activity.Description</td>
+            <td>@activity.ActivityDate</td>
+            <td>@activity.Status</td>
+            <td>
+                @if (activity.Status != "Completed")
+                {
+                    <form asp-action="Complete" method="post">
+                        <input type="hidden" name="id" value="@activity.ActivityId" />
+                        <button class="btn btn-sm btn-success" type="submit">
+                            Complete
+                        </button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
